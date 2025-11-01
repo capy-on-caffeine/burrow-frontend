@@ -71,24 +71,29 @@ export function LoginForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
+      <Card className="bg-slate-900/80 backdrop-blur-md border-slate-700">
         <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account
+          <div className="flex items-center justify-center mb-4">
+            <div className="w-12 h-12 bg-linear-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-2xl">B</span>
+            </div>
+          </div>
+          <CardTitle className="text-white text-center text-2xl">Welcome Back</CardTitle>
+          <CardDescription className="text-slate-400 text-center">
+            Login to continue your journey through knowledge
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
             <div className="grid gap-4">
               {message && (
-                <p className={`text-sm ${isError ? 'text-red-600' : 'text-green-600'}`}>
+                <p className={`text-sm ${isError ? 'text-red-400' : 'text-green-400'}`}>
                   {message}
                 </p>
               )}
 
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="text-slate-300">Email</Label>
                 <Input
                   id="email"
                   type="email"
@@ -96,15 +101,16 @@ export function LoginForm({
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-500 focus:border-orange-500"
                 />
               </div>
 
               <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password" className="text-slate-300">Password</Label>
                   <a
                     href="#"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline text-orange-500 hover:text-orange-400"
                   >
                     Forgot your password?
                   </a>
@@ -115,17 +121,18 @@ export function LoginForm({
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-500 focus:border-orange-500"
                 />
               </div>
               <div className="space-y-2 pt-2">
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button type="submit" className="w-full bg-linear-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white" disabled={isLoading}>
                   {isLoading ? "Logging in..." : "Login"}
                 </Button>
-                <Button variant="outline" type="button" className="w-full">
+                <Button variant="outline" type="button" className="w-full border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white">
                   Login with Google
                 </Button>
-                <p className="text-center text-sm text-muted-foreground">
-                  Don&apos;t have an account? <a href="/signup" className="underline">Sign up</a>
+                <p className="text-center text-sm text-slate-400">
+                  Don&apos;t have an account? <a href="/signup" className="underline text-orange-500 hover:text-orange-400">Sign up</a>
                 </p>
               </div>
             </div>

@@ -1,5 +1,6 @@
 'use client'; 
 
+import { Navbar } from "@/components/navbar"
 import { AppSidebar } from "@/components/app-sidebar"
 import {
   Breadcrumb,
@@ -20,21 +21,41 @@ import {
 import { useState, useEffect } from "react"; // Import hooks
 import { formatDistanceToNow } from 'date-fns'; // For formatting timestamps
 
+interface Author {
+  username: string;
+}
+
+interface Comment {
+  _id: string;
+  author: Author;
+  commentText: string;
+  createdAt: string;
+  votes: number;
+  parentComment?: string;
+  children: Comment[];
+}
+
+interface CommentThreadProps {
+  comment: Comment;
+  onVote: (commentId: string, direction: 'up' | 'down') => void;
+  onEdit: (commentId: string, newText: string) => void;
+  onDelete: (commentId: string) => void;
+}
 
 function CommentThread({
   comment,
   onVote,
   onEdit,
   onDelete,
-}) {
+}: CommentThreadProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(comment.commentText);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
-  const dropdownRef = useRef(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // --- Local Handlers ---
-  const handleVote = (direction) => {
+  const handleVote = (direction: 'up' | 'down') => {
     onVote(comment._id, direction);
   };
 
@@ -75,14 +96,14 @@ function CommentThread({
   
   // Effect to close the dropdown when clicking outside
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [dropdownRef]);
+  }, []);
 
 
   // Use a dynamic placeholder avatar
@@ -91,7 +112,7 @@ function CommentThread({
   return (
     <div className="flex space-x-3 w-full" id={`comment-${comment._id}`}>
       {/* Avatar + vertical thread line */}
-      <div className="flex flex-col items-center flex-shrink-0">
+      <div className="flex flex-col items-center shrink-0">
         <img src={avatarUrl} alt={comment.author.username} className="w-8 h-8 rounded-full" />
         {/* Render thread line if there are children */}
         {comment.children.length > 0 && (
@@ -105,7 +126,7 @@ function CommentThread({
         <div className="flex items-center space-x-2 text-sm flex-wrap">
           <span className="font-semibold text-gray-900 truncate">{comment.author.username}</span>
           <span className="text-gray-500">·</span>
-          <span className="text-gray-500 flex-shrink-0">
+          <span className="text-gray-500 shrink-0">
             {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
           </span>
         </div>
@@ -138,7 +159,7 @@ function CommentThread({
             </div>
           </div>
         ) : (
-          <p className="mt-1 text-gray-800 text-sm whitespace-pre-wrap break-words">{comment.commentText}</p>
+          <p className="mt-1 text-gray-800 text-sm whitespace-pre-wrap wrap-break-word">{comment.commentText}</p>
         )}
 
         {/* Action Bar */}
@@ -164,7 +185,7 @@ function CommentThread({
             {/* Share Button */}
             <button onClick={handleShare} className="flex items-center space-x-1 hover:text-gray-900">
               <Share size={16} />
-              <span className="min-w-[40px]">{copySuccess ? 'Copied!' : 'Share'}</span>
+              <span className="min-w-10">{copySuccess ? 'Copied!' : 'Share'}</span>
             </button>
             
             {/* More Options Dropdown */}
@@ -198,7 +219,7 @@ function CommentThread({
 
         {/* --- Children (Replies) --- */}
         <div className="mt-4 space-y-4">
-          {comment.children.map(reply => (
+          {comment.children.map((reply: Comment) => (
             <CommentThread
               key={reply._id}
               comment={reply}
@@ -215,9 +236,9 @@ function CommentThread({
 
 
 export default function Page() {
-  const [rawComments, setRawComments] = useState([]); // Flat list from API
+  const [rawComments, setRawComments] = useState<Comment[]>([]); // Flat list from API
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<string | null>(null);
   
     // Use the ID from your logs
     const postId = "6904af991781dc91b5c59b29"; 
@@ -240,7 +261,7 @@ export default function Page() {
         setError(null);
       } catch (err) {
         console.error('Error fetching comments:', err);
-        setError(err.message);
+        setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
         setLoading(false);
       }
@@ -253,8 +274,8 @@ export default function Page() {
     // --- Memoized Tree Building ---
     // This builds the nested tree from the flat list every time rawComments changes
     const commentTree = useMemo(() => {
-      const map = {};
-      const roots = [];
+      const map: Record<string, Comment> = {};
+      const roots: Comment[] = [];
       if (!rawComments || rawComments.length === 0) return [];
   
       rawComments.forEach(comment => {
@@ -273,7 +294,7 @@ export default function Page() {
   
     // --- API Handlers (Passed to CommentThread) ---
     
-    const handleVote = useCallback(async (commentId, direction) => {
+    const handleVote = useCallback(async (commentId: string, direction: 'up' | 'down') => {
       // Optimistic UI update
       setRawComments(currentComments =>
         currentComments.map(c =>
@@ -292,9 +313,9 @@ export default function Page() {
         console.error('Failed to vote:', err);
         fetchComments(); // Rollback on error
       }
-    }, [fetchComments]);
+    }, [fetchComments, API_URL]);
   
-    const handleEditSubmit = useCallback(async (commentId, newText) => {
+    const handleEditSubmit = useCallback(async (commentId: string, newText: string) => {
       // Optimistic UI update
       setRawComments(currentComments =>
         currentComments.map(c =>
@@ -313,12 +334,12 @@ export default function Page() {
         console.error('Failed to edit:', err);
         fetchComments(); // Rollback on error
       }
-    }, [fetchComments]);
+    }, [fetchComments, API_URL]);
   
-    const handleDelete = useCallback(async (commentId) => {
+    const handleDelete = useCallback(async (commentId: string) => {
       // Optimistic UI update: Remove comment and all its descendants
-      const getChildIdsRecursive = (parentId, allComments) => {
-        let ids = [];
+      const getChildIdsRecursive = (parentId: string, allComments: Comment[]): string[] => {
+        let ids: string[] = [];
         const children = allComments.filter(c => c.parentComment === parentId);
         for (const child of children) {
           ids.push(child._id);
@@ -341,11 +362,13 @@ export default function Page() {
         console.error('Failed to delete:', err);
         fetchComments(); // Rollback on error
       }
-    }, [rawComments, fetchComments]);
+    }, [rawComments, fetchComments, API_URL]);
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
+    <>
+      <Navbar />
+      <SidebarProvider>
+        <AppSidebar />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
@@ -395,5 +418,6 @@ export default function Page() {
         </main>
       </SidebarInset>
     </SidebarProvider>
+    </>
   )
 }

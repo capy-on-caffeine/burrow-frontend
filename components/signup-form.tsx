@@ -79,24 +79,29 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   };
 
   return (
-    <Card {...props}>
+    <Card {...props} className="bg-slate-900/80 backdrop-blur-md border-slate-700">
       <CardHeader>
-        <CardTitle>Create an account</CardTitle>
-        <CardDescription>
-          Enter your information below to create your account
+        <div className="flex items-center justify-center mb-4">
+          <div className="w-12 h-12 bg-linear-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-2xl">B</span>
+          </div>
+        </div>
+        <CardTitle className="text-white text-center text-2xl">Join Burrow</CardTitle>
+        <CardDescription className="text-slate-400 text-center">
+          Start exploring the graph of knowledge
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4">
             {message && (
-              <p className={`text-sm ${isError ? 'text-red-600' : 'text-green-600'}`}>
+              <p className={`text-sm ${isError ? 'text-red-400' : 'text-green-400'}`}>
                 {message}
               </p>
             )}
 
             <div className="grid gap-2">
-              <Label htmlFor="name">Full Name</Label>
+              <Label htmlFor="name" className="text-slate-300">Full Name</Label>
               <Input
                 id="name"
                 type="text"
@@ -104,11 +109,12 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-500 focus:border-orange-500"
               />
             </div>
             
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-slate-300">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -116,29 +122,31 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-500 focus:border-orange-500"
               />
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-slate-400">
                 We&apos;ll use this to contact you. We will not share your email
                 with anyone else.
               </p>
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-slate-300">Password</Label>
               <Input
                 id="password"
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-500 focus:border-orange-500"
               />
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-slate-400">
                 Must be at least 8 characters long.
               </p>
             </div>
             
             <div className="grid gap-2">
-              <Label htmlFor="confirm-password">
+              <Label htmlFor="confirm-password" className="text-slate-300">
                 Confirm Password
               </Label>
               <Input
@@ -147,19 +155,20 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-500 focus:border-orange-500"
               />
-              <p className="text-sm text-muted-foreground">Please confirm your password.</p>
+              <p className="text-sm text-slate-400">Please confirm your password.</p>
             </div>
             
             <div className="space-y-2 pt-2">
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full bg-linear-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white" disabled={isLoading}>
                 {isLoading ? "Creating Account..." : "Create Account"}
               </Button>
-              <Button variant="outline" type="button" className="w-full">
+              <Button variant="outline" type="button" className="w-full border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white">
                 Sign up with Google
               </Button>
-              <p className="px-6 text-center text-sm text-muted-foreground">
-                Already have an account? <a href="/login" className="underline">Sign in</a>
+              <p className="px-6 text-center text-sm text-slate-400">
+                Already have an account? <a href="/login" className="underline text-orange-500 hover:text-orange-400">Sign in</a>
               </p>
             </div>
           </div>
