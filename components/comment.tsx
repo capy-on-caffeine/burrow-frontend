@@ -8,8 +8,19 @@ import {
   FaEllipsisH 
 } from 'react-icons/fa';
 
+interface CommentProps {
+  avatar: string;
+  username: string;
+  flairText?: string;
+  flairColor?: 'green' | 'gray';
+  timestamp: string;
+  commentText: string;
+  votes: number;
+  children?: React.ReactNode;
+}
+
 // Reusable Comment Component
-const Comment = ({
+const Comment: React.FC<CommentProps> = ({
   avatar,
   username,
   flairText,
@@ -33,7 +44,7 @@ const Comment = ({
           <FaMinusCircle />
         </button>
         {/* The vertical thread line */}
-        <div className="w-px flex-grow bg-gray-300 mt-2"></div>
+        <div className="w-px grow bg-gray-300 mt-2"></div>
       </div>
 
       {/* Main Content: Header, Body, Actions, and Children */}

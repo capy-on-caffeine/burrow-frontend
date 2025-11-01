@@ -2,24 +2,14 @@
 
 import * as React from "react"
 import {
-  AudioWaveform,
   BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
   Merge,
   PieChart,
   Search,
-  Settings2,
-  SquareTerminal,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
 import {
   Sidebar,
   SidebarContent,
@@ -31,28 +21,18 @@ import {
 // This is sample data.
 const data = {
   user: {
-    name: "Burrow",
-    email: "m@example.com",
+    name: "Burrow Explorer",
+    email: "explorer@burrow.app",
     avatar: "/avatars/shadcn.jpg",
   },
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
   navMain: [
+    {
+      title: "Dashboard",
+      url: "/dashboard",
+      icon: PieChart,
+      isActive: false,
+      items: [],
+    },
     {
       title: "Search",
       url: "/search",
@@ -61,46 +41,38 @@ const data = {
       items: [],
     },
     {
-      title: "KNN",
+      title: "Graph View",
       url: "/knn",
       icon: Merge,
+      items: [],
     },
     {
-      title: "feed",
+      title: "Feed",
       url: "/feed",
       icon: BookOpen,
       items: [],
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
     },
   ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+    <Sidebar collapsible="icon" className="border-r border-slate-800/50 bg-slate-900" {...props}>
+      <SidebarHeader className="border-b border-slate-800/50 px-4 py-4">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-linear-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center shadow-lg">
+            <span className="text-white font-bold text-lg">B</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-white font-semibold text-sm">Burrow</span>
+            <span className="text-slate-400 text-xs">Knowledge Explorer</span>
+          </div>
+        </div>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="px-2">
         <NavMain items={data.navMain} />
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="border-t border-slate-800/50">
         <NavUser user={data.user} />
       </SidebarFooter>
       <SidebarRail />

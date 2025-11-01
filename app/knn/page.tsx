@@ -171,63 +171,90 @@ export default function Page() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
-        {/* --- Header from Sidebar File --- */}
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+      <SidebarInset className="bg-slate-950">
+        {/* --- Header --- */}
+        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 border-b border-slate-800 bg-slate-900/50 backdrop-blur-sm">
           <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
-            {/* --- Breadcrumb (Updated for Graph) --- */}
+            <SidebarTrigger className="-ml-1 text-slate-300 hover:text-white" />
+            <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4 bg-slate-700" />
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+                  <BreadcrumbLink href="/dashboard" className="text-slate-400 hover:text-orange-400 transition-colors">
+                    Dashboard
+                  </BreadcrumbLink>
                 </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbSeparator className="hidden md:block text-slate-600" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Graph View</BreadcrumbPage>
+                  <BreadcrumbPage className="text-slate-200">Knowledge Graph</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
         </header>
 
-        {/* --- Main Content Area (Layout from Sidebar, Content from Graph) --- */}
-        <main className="relative w-full h-[calc(100vh-4rem)]">
-          {/* --- Render logic from Graph File (adapted) --- */}
-          {isLoading && <GraphPlaceholder message="Fetching data..." />}
-          {isError && <GraphPlaceholder message="Error loading data. Please try again." />}
-          {!isLoading && !isError && !graphData.nodes.length && <GraphPlaceholder message="No data found." />}
+        {/* --- Main Content Area --- */}
+        <main className="relative w-full h-[calc(100vh-4rem)] bg-slate-950">
+          {/* Gradient overlay for aesthetics */}
+          <div className="absolute inset-0 bg-linear-to-br from-slate-950 via-slate-900/50 to-slate-950 pointer-events-none z-0"></div>
+          
+          {/* --- Render logic --- */}
+          {isLoading && (
+            <div className="absolute inset-0 flex items-center justify-center z-10">
+              <div className="text-center">
+                <div className="w-16 h-16 border-4 border-orange-500/30 border-t-orange-500 rounded-full animate-spin mb-4 mx-auto"></div>
+                <p className="text-slate-400 text-lg">Loading knowledge graph...</p>
+              </div>
+            </div>
+          )}
+          
+          {isError && (
+            <div className="absolute inset-0 flex items-center justify-center z-10">
+              <div className="bg-red-500/10 border border-red-500/50 rounded-xl p-8 max-w-md text-center">
+                <p className="text-red-400 text-lg">Error loading graph. Please try again.</p>
+              </div>
+            </div>
+          )}
+          
+          {!isLoading && !isError && !graphData.nodes.length && (
+            <div className="absolute inset-0 flex items-center justify-center z-10">
+              <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-12 text-center max-w-md">
+                <p className="text-slate-400 text-lg">No graph data available</p>
+              </div>
+            </div>
+          )}
 
           {/* Render the graph only if data is ready */}
           {!isLoading && !isError && graphData.nodes.length > 0 && (
-            <ForceGraph2D
-              ref={graphRef}
-              graphData={graphData}
-              // --- INTERACTION ---
-              onNodeClick={handleNodeClick}
-              onNodeHover={handleNodeHover}
-              onBackgroundClick={handleBackgroundClick}
-              onLinkClick={handleLinkClick}
-              linkHoverPrecision={4}
-              // --- VISUALS ---
-              nodeVal={8}
-              nodeOpacity={0.8}
-              nodeColor={(node: any) => {
-                if (highlightNodes.size === 0) {
-                  return 'rgba(59, 130, 246, 0.8)'; // Default blue
-                }
-                return highlightNodes.has(node) ? 'rgba(239, 68, 68, 1)' : 'rgba(200, 200, 200, 0.2)';
-              }}
-              // --- LINKS ---
-              linkWidth={(link: any) => (highlightLinks.has(link) ? 2 : 0.5)}
-              linkColor={() => 'rgba(150, 150, 150, 0.6)'}
-              linkDirectionalArrowLength={3.5}
-              linkDirectionalArrowRelPos={1}
-              // --- LABELS ---
-              nodeLabel={(node: any) => node.name || node.title}
-              linkLabel="label"
-            />
+            <div className="relative z-0 w-full h-full">
+              <ForceGraph2D
+                ref={graphRef}
+                graphData={graphData}
+                // --- INTERACTION ---
+                onNodeClick={handleNodeClick}
+                onNodeHover={handleNodeHover}
+                onBackgroundClick={handleBackgroundClick}
+                onLinkClick={handleLinkClick}
+                linkHoverPrecision={4}
+                // --- VISUALS ---
+                nodeVal={8}
+                nodeColor={(node: any) => {
+                  if (highlightNodes.size === 0) {
+                    return 'rgba(249, 115, 22, 0.8)'; // Orange default
+                  }
+                  return highlightNodes.has(node) ? 'rgba(249, 115, 22, 1)' : 'rgba(100, 116, 139, 0.3)';
+                }}
+                // --- LINKS ---
+                linkWidth={(link: any) => (highlightLinks.has(link) ? 3 : 1)}
+                linkColor={(link: any) => highlightLinks.has(link) ? 'rgba(249, 115, 22, 0.6)' : 'rgba(100, 116, 139, 0.4)'}
+                linkDirectionalArrowLength={4}
+                linkDirectionalArrowRelPos={1}
+                // --- LABELS ---
+                nodeLabel={(node: any) => node.name || node.title}
+                linkLabel="label"
+                backgroundColor="#020617"
+              />
+            </div>
           )}
         </main>
       </SidebarInset>
