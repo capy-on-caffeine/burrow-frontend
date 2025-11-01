@@ -217,13 +217,40 @@ function CommentThread({
 export default function Page() {
   const [rawComments, setRawComments] = useState([]); // Flat list from API
     const [loading, setLoading] = useState(true);
+    const [posts, setPosts] = useState([]);
     const [error, setError] = useState(null);
   
     // Use the ID from your logs
     const postId = "6904af991781dc91b5c59b29"; 
     // Use the port from your logs
     const API_URL = 'http://localhost:5000/api'; 
-  
+
+   const fetchPosts = useCallback(async () => {
+     try {
+      console.log('Fetching all posts...');
+      setLoading(true);
+      // Fetch all posts, not comments for one post
+      const response = await fetch(`${API_URL}/posts`); 
+       if (!response.ok) {
+         const errData = await response.json();
+          throw new Error(errData.message || 'Failed to fetch posts');
+       }
+        const data = await response.json();
+        console.log('Posts data:', data);
+        setPosts(data); // Set posts state
+        setError(null);
+    } catch (err) {
+       console.error('Error fetching posts:', err);
+       setError(err.message);
+ } finally {
+ setLoading(false);
+ }
+  }, []); // No dependencies needed
+
+  useEffect(() => {
+      fetchPosts();
+  }, [fetchPosts]);
+
     // --- Data Fetching ---
     const fetchComments = useCallback(async () => {
       try {
@@ -361,10 +388,6 @@ export default function Page() {
                     Feed
                   </BreadcrumbLink>
                 </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>{postId}</BreadcrumbPage>
-                </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
@@ -372,7 +395,7 @@ export default function Page() {
         <main className="p-4">
           <div className="p-4 bg-white rounded-lg w-full max-w-4xl mx-auto shadow-sm border">
             {/* Main Content Area */}
-            {loading && <p className="text-sm text-gray-500">Loading comments...</p>}
+            {loading && <p className="text-sm text-gray-500">Loading feed...</p>}
             
             {error && <p className="text-sm text-red-500">Error: {error}</p>}
             
