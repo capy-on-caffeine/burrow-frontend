@@ -29,7 +29,6 @@ interface Post {
   _id: string;
   title: string;
   body?: string;
-  subreddit: string;
   author?: {
     username: string;
   };
@@ -74,8 +73,6 @@ function PostItem({ post, onVote }: { post: Post; onVote: (postId: string, direc
       <div className="flex-1 p-5 min-w-0">
         {/* Post Metadata */}
         <div className="flex items-center text-xs text-slate-400 mb-2 flex-wrap gap-1">
-          <span className="font-semibold text-orange-500 px-2 py-0.5 bg-orange-500/10 rounded">r/{post.subreddit}</span>
-          <span className="mx-1">·</span>
           <span className="text-slate-300">Posted by u/{authorName}</span>
           <span className="mx-1">·</span>
           <span className="shrink-0">
@@ -114,31 +111,30 @@ function PostItem({ post, onVote }: { post: Post; onVote: (postId: string, direc
 
 
 /**
- * The main page component for displaying posts from a subreddit.
+ * The main page component for displaying search results.
  */
-export default function SubredditSearchPage() {
+export default function SearchPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false); // Don't load on init
   const [error, setError] = useState<string | null>(null);
   
   // State for the search input
   const [searchTerm, setSearchTerm] = useState('');
-  // State for the subreddit we are actually fetching
-  const [subredditToFetch, setSubredditToFetch] = useState('');
+  // State for the query we are actually fetching
+  const [queryToFetch, setQueryToFetch] = useState('');
 
   // --- Removed: useEffect to get name from URL ---
 
   const fetchPosts = useCallback(async () => {
-    // Only fetch if we have a subreddit name
-    if (!subredditToFetch) return;
+    // Only fetch if we have a query
+    if (!queryToFetch) return;
 
-    console.log(`Fetching posts for r/${subredditToFetch}...`);
+    console.log(`Fetching posts for query: ${queryToFetch}...`);
     setLoading(true);
     setError(null); // Clear previous errors
     setPosts([]); // Clear previous posts
     try {
-      // const response = await fetch(`${API_URL}/posts/subreddit/${subredditToFetch}`);
-      const response = await fetch(`${API_URL}/search?query=${subredditToFetch}`);
+      const response = await fetch(`${API_URL}/search?query=${queryToFetch}`);
       console.log(response);
       
       if (!response.ok) {
@@ -155,7 +151,7 @@ export default function SubredditSearchPage() {
     } finally {
       setLoading(false);
     }
-  }, [subredditToFetch]); // Re-run when subredditToFetch changes
+  }, [queryToFetch]); // Re-run when queryToFetch changes
 
   useEffect(() => {
     fetchPosts();
@@ -187,7 +183,7 @@ export default function SubredditSearchPage() {
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // Prevent form reload
     if (searchTerm.trim()) {
-      setSubredditToFetch(searchTerm.trim());
+      setQueryToFetch(searchTerm.trim());
     }
   };
 
@@ -215,10 +211,10 @@ export default function SubredditSearchPage() {
         ))}
       </div>
     );
-  } else if (subredditToFetch) {
+  } else if (queryToFetch) {
     content = (
       <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-12 text-center">
-        <p className="text-slate-400 text-lg">No posts found for r/{subredditToFetch}</p>
+        <p className="text-slate-400 text-lg">No posts found for "{queryToFetch}"</p>
       </div>
     );
   } else {
@@ -226,7 +222,7 @@ export default function SubredditSearchPage() {
       <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-12 text-center">
         <Search className="w-16 h-16 text-slate-600 mx-auto mb-4" />
         <p className="text-slate-400 text-lg mb-2">Start Your Exploration</p>
-        <p className="text-slate-500">Enter a subreddit name above to discover posts</p>
+        <p className="text-slate-500">Enter a search query to discover posts</p>
       </div>
     );
   }
@@ -252,7 +248,7 @@ export default function SubredditSearchPage() {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block text-slate-600" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage className="text-slate-200">Subreddit Search</BreadcrumbPage>
+                  <BreadcrumbPage className="text-slate-200">Search</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -264,9 +260,9 @@ export default function SubredditSearchPage() {
             
             <div className="mb-8">
               <h1 className="text-4xl font-bold mb-2 bg-linear-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
-                Subreddit Post Search
+                Post Search
               </h1>
-              <p className="text-slate-400">Explore Reddit posts by subreddit</p>
+              <p className="text-slate-400">Explore posts and topics</p>
             </div>
             
             {/* --- Search Input Form --- */}
@@ -276,10 +272,9 @@ export default function SubredditSearchPage() {
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Enter subreddit name (e.g., reactjs)"
-                  className="w-full px-6 py-4 pl-12 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/20 transition-all"
+                  placeholder="Search for topics, keywords, or content..."
+                  className="w-full px-6 py-4 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/20 transition-all"
                 />
-                <span className="absolute left-4 top-4 text-slate-400 font-medium">r/</span>
               </div>
               <button
                 type="submit"
