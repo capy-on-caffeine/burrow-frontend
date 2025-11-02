@@ -33,7 +33,7 @@ export function NavMain({
             <SidebarMenuButton 
               tooltip={item.title} 
               asChild
-              className="hover:bg-orange-500/10 hover:text-orange-400 data-[active=true]:bg-orange-500/20 data-[active=true]:text-orange-400 transition-all"
+              className="hover:bg-orange-500/10 hover:text-orange-400 data-[active=true]:bg-orange-500/20 data-[active=true]:text-orange-400 text-slate-200 transition-all"
             >
               <a href={item.url} className="flex items-center gap-3 px-3 py-2">
                 {item.icon && <item.icon className="w-5 h-5" />}
